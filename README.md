@@ -6,6 +6,29 @@ The application is structured as three connected interfaces: a public-facing inq
 
 ---
 
+### 🌐 Live Demo
+
+| Interface | Live URL |
+| --- | --- |
+| **Public Contact Form** | [Open Live](https://rohith292006.github.io/FUTURE_FS_02/frontend/index.html) |
+| **Admin Login** | [Open Live](https://rohith292006.github.io/FUTURE_FS_02/frontend/admin.html) |
+| **Backend API** | [https://future-fs-02-ngex.onrender.com](https://future-fs-02-ngex.onrender.com) |
+
+**Demo Admin Credentials:**
+```
+Email: admin@futurefs.com
+Password: Admin@1234
+```
+
+> ⚠️ The backend is hosted on Render's free tier, which spins down after periods of inactivity. The **first request may take 30–50 seconds** to respond while the server wakes up — this is expected behavior, not a bug. Subsequent requests will be instant.
+
+**Hosting Stack:**
+* Frontend → GitHub Pages
+* Backend → Render (Node.js Web Service)
+* Database → MongoDB Atlas (Cloud)
+
+---
+
 ### 🎯 Objectives of the Project
 
 * To build a simple yet functional CRM that allows an admin to view, manage, and convert leads coming from a website contact form.
@@ -86,7 +109,9 @@ future-fs-02/
 
 ---
 
-### 🚀 Setup & Deployment
+### 🚀 Local Development Setup
+
+> The live demo above is fully functional — this section is only needed if you want to run the project locally for development or testing.
 
 **1. Clone the Repository**
 ```bash
@@ -137,6 +162,7 @@ Navigate to `frontend/admin.html` and log in using the `ADMIN_EMAIL` and `ADMIN_
 * [x] Search & filter leads *(bonus)*
 * [x] Timestamp tracking on every lead *(bonus)*
 * [x] Simple analytics — total leads, conversions *(bonus)*
+* [x] Fully deployed live demo accessible to anyone, anywhere *(bonus)*
 
 ---
 
