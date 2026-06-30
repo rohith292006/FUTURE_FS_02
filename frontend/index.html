@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Omnikira Labs — Contact</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:        #080909;
+      --surface:      #111313;
+      --card:         #161919;
+      --border:       #2a3333;
+      --green:        #39ff6e;
+      --green-glow:   rgba(57,255,110,0.14);
+      --green-dim:    rgba(57,255,110,0.07);
+
+      /* ── FIXED COLOR HIERARCHY ── */
+      --text-primary:   #f0f5f5;   /* main headings — near white        */
+      --text-secondary: #b8d4d4;   /* subheadings, labels — teal-white  */
+      --text-body:      #94b0b0;   /* body text, descriptions           */
+      --text-muted:     #5a7070;   /* timestamps, footer, placeholders  */
+
+      --error: #ff4f4f;
+      --mono:  'JetBrains Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 460px 1fr;
+    }
+
+    /* Subtle scanline */
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 4px);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ═══════════ LEFT PANEL ═══════════ */
+    .left {
+      position: sticky; top: 0; height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      overflow: hidden; z-index: 1;
+    }
+
+    .left::after {
+      content: ''; position: absolute; bottom: -100px; left: -100px;
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(57,255,110,0.1) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .left-top { padding: 44px 48px 0; }
+
+    .logo-row {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 64px;
+    }
+
+    .logo-mark {
+      width: 34px; height: 34px; background: var(--green);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-family: var(--mono); font-size: 0.82rem; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--green);
+    }
+
+    .left-body {
+      flex: 1; padding: 0 48px;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+
+    .tag {
+      font-family: var(--mono); font-size: 0.7rem;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--green); margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .tag::before { content: ''; width: 20px; height: 1px; background: var(--green); }
+
+    .headline {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.2rem, 4.2vw, 5rem);
+      line-height: 0.93; letter-spacing: 0.02em;
+      color: var(--text-primary); margin-bottom: 28px;
+    }
+
+    .headline .g { color: var(--green); }
+
+    /* subtext uses --text-body so it's clearly readable */
+    .subtext {
+      font-size: 1rem; color: var(--text-body);
+      line-height: 1.8; margin-bottom: 52px; max-width: 320px;
+    }
+
+    .trust-list {
+      border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+    }
+
+    .trust-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 15px 20px; border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--text-secondary); /* ← now clearly visible */
+      transition: background 0.2s;
+    }
+
+    .trust-item:last-child { border-bottom: none; }
+    .trust-item:hover { background: var(--green-dim); color: var(--text-primary); }
+
+    .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green); flex-shrink: 0;
+      box-shadow: 0 0 7px var(--green);
+    }
+
+    .left-footer {
+      padding: 24px 48px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .footer-label {
+      font-family: var(--mono); font-size: 0.65rem;
+      color: var(--text-muted); letter-spacing: 0.1em;
+    }
+
+    .status-pill {
+      display: flex; align-items: center; gap: 7px;
+      font-family: var(--mono); font-size: 0.65rem;
+      color: var(--green); letter-spacing: 0.1em;
+    }
+
+    .pulse {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(57,255,110,0.5); }
+      50% { opacity:.5; box-shadow: 0 0 0 5px rgba(57,255,110,0); }
+    }
+
+    /* ═══════════ RIGHT PANEL ═══════════ */
+    .right {
+      padding: 64px 72px;
+      display: flex; flex-direction: column; justify-content: center;
+      align-items: center;
+      min-height: 100vh; position: relative; z-index: 1;
+    }
+
+    .form-header { width: 100%; max-width: 680px; }
+    .success-screen { width: 100%; }
+
+    .right::before {
+      content: ''; position: absolute; top: -80px; right: -80px;
+      width: 440px; height: 440px;
+      background: radial-gradient(circle, rgba(57,255,110,0.05) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .form-header { margin-bottom: 44px; width: 100%; max-width: 680px; }
+
+    /* eyebrow — now clearly visible */
+    .form-eyebrow {
+      font-family: var(--mono); font-size: 0.75rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.16em; margin-bottom: 12px;
+    }
+
+    .form-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 3vw, 2.8rem);
+      letter-spacing: 0.04em; color: var(--text-primary); margin-bottom: 8px;
+    }
+
+    /* "Fields marked * are required" — now visible */
+    .form-sub {
+      font-size: 0.9rem; color: var(--text-body);
+    }
+
+    .form-sub span { color: var(--green); }
+
+    form { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 680px; }
+
+    .field { display: flex; flex-direction: column; gap: 9px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+    /* Labels — now clearly visible */
+    label {
+      font-family: var(--mono); font-size: 0.7rem; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    label .req { color: var(--green); }
+
+    input, select, textarea {
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+      padding: 14px 17px; font-family: 'Inter', sans-serif; font-size: 0.95rem;
+      color: var(--text-primary); outline: none; width: 100%;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: var(--text-muted); font-size: 0.875rem;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px var(--green-glow);
+      background: var(--surface);
+    }
+
+    select {
+      cursor: pointer; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23b8d4d4' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 15px center; padding-right: 42px;
+    }
+
+    select option { background: #111313; color: var(--text-primary); }
+    textarea { resize: vertical; min-height: 130px; line-height: 1.7; }
+
+    .hp { display: none !important; }
+
+    /* Divider — now clearly visible */
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      color: var(--text-secondary);
+      font-family: var(--mono); font-size: 0.68rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+    }
+
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    .submit-btn {
+      background: var(--green); color: var(--black); border: none; border-radius: 8px;
+      padding: 16px 32px; font-family: var(--mono); font-size: 0.85rem; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer;
+      transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+
+    .submit-btn:hover {
+      background: #52ff85;
+      box-shadow: 0 0 32px rgba(57,255,110,0.45), 0 4px 16px rgba(0,0,0,0.3);
+      transform: translateY(-2px);
+    }
+
+    .submit-btn:active { transform: translateY(0); }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .spinner {
+      width: 14px; height: 14px; border: 2px solid rgba(0,0,0,0.25);
+      border-top-color: var(--black); border-radius: 50%;
+      animation: spin 0.7s linear infinite; display: none;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ═══════════ TOAST ═══════════ */
+    .toast {
+      position: fixed; bottom: 28px; right: 28px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 16px 20px; display: flex; align-items: flex-start; gap: 12px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+      transform: translateY(80px); opacity: 0;
+      transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      z-index: 999; max-width: 320px;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-left: 3px solid var(--green); }
+    .toast.error   { border-left: 3px solid var(--error); }
+    .toast-icon { font-size: 1.1rem; margin-top: 1px; }
+    .toast-title { font-weight: 600; font-size: 0.875rem; margin-bottom: 3px; color: var(--text-primary); }
+    .toast-sub { color: var(--text-body); font-size: 0.78rem; }
+
+    /* ═══════════ SUCCESS ═══════════ */
+    .success-screen {
+      display: none; flex-direction: column; align-items: flex-start; gap: 20px;
+      max-width: 620px; padding: 48px;
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 3px solid var(--green); border-radius: 12px;
+    }
+
+    .success-icon {
+      width: 56px; height: 56px; background: var(--green-dim);
+      border: 1px solid rgba(57,255,110,0.3); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+    }
+
+    .success-screen h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem; letter-spacing: 0.04em; color: var(--text-primary);
+    }
+
+    .success-screen p { font-size: 0.95rem; color: var(--text-body); line-height: 1.75; }
+
+    .reset-btn {
+      background: transparent; border: 1px solid var(--border); border-radius: 8px;
+      padding: 12px 24px; color: var(--text-secondary);
+      font-family: var(--mono); font-size: 0.72rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      cursor: pointer; transition: all 0.2s;
+    }
+
+    .reset-btn:hover { border-color: var(--green); color: var(--green); }
+
+    /* ═══════════ RESPONSIVE ═══════════ */
+    @media (max-width: 1100px) {
+      body { grid-template-columns: 380px 1fr; }
+      .left-top { padding: 36px 36px 0; }
+      .left-body { padding: 0 36px; }
+      .left-footer { padding: 20px 36px; }
+      .right { padding: 52px 52px; }
+    }
+
+    @media (max-width: 860px) {
+      body { grid-template-columns: 1fr; }
+      .left { position: relative; height: auto; }
+      .left-top { padding: 32px 32px 0; }
+      .left-body { padding: 32px 32px; }
+      .left-footer { padding: 20px 32px; }
+      .right { padding: 44px 32px; min-height: auto; }
+      .field-row { grid-template-columns: 1fr; gap: 20px; }
+      .headline { font-size: 3.5rem; }
+      form { max-width: 100%; }
+    }
+
+    @media (max-width: 480px) {
+      .left-top, .left-body, .left-footer { padding-left: 20px; padding-right: 20px; }
+      .right { padding: 32px 20px; }
+      .success-screen { padding: 28px 20px; }
+      .headline { font-size: 2.8rem; }
+      .form-title { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ LEFT PANEL ═══ -->
+  <aside class="left">
+    <div class="left-top">
+      <div class="logo-row">
+        <div class="logo-mark">⚡</div>
+        <span class="logo-text">Omnikira Labs</span>
+      </div>
+    </div>
+
+    <div class="left-body">
+      <p class="tag">New Project Inquiry</p>
+      <h1 class="headline">BUILD.<br/>SHIP.<br/><span class="g">DOMINATE.</span></h1>
+      <p class="subtext">We engineer digital products that don't just work — they win. Tell us what you're building.</p>
+
+      <div class="trust-list">
+        <div class="trust-item"><div class="dot"></div>Response guaranteed within 24 hours</div>
+        <div class="trust-item"><div class="dot"></div>End-to-end full stack development</div>
+        <div class="trust-item"><div class="dot"></div>Zero data sharing. Ever.</div>
+        <div class="trust-item"><div class="dot"></div>Direct contact. No middlemen.</div>
+      </div>
+    </div>
+
+    <div class="left-footer">
+      <span class="footer-label">© 2026 OMNIKIRA LABS</span>
+      <div class="status-pill"><div class="pulse"></div>ACCEPTING PROJECTS</div>
+    </div>
+  </aside>
+
+  <!-- ═══ RIGHT PANEL ═══ -->
+  <main class="right">
+    <div class="form-header">
+      <p class="form-eyebrow">// initiate contact sequence</p>
+      <h2 class="form-title">Start Your Project</h2>
+      <p class="form-sub">Fields marked <span>*</span> are required.</p>
+    </div>
+
+    <form id="leadForm">
+      <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off"/>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="name">Full Name <span class="req">*</span></label>
+          <input type="text" id="name" placeholder="Your full name" required autocomplete="name"/>
+        </div>
+        <div class="field">
+          <label for="email">Email Address <span class="req">*</span></label>
+          <input type="email" id="email" placeholder="you@company.com" required autocomplete="email"/>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="+91 98765 43210" autocomplete="tel"/>
+        </div>
+        <div class="field">
+          <label for="source">How did you find us? <span class="req">*</span></label>
+          <select id="source" required>
+            <option value="" disabled selected>Select source</option>
+            <option value="google">Google Search</option>
+            <option value="instagram">Instagram</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="referral">Referral</option>
+            <option value="twitter">Twitter / X</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="service">Service Required</label>
+        <select id="service">
+          <option value="" disabled selected>Select a service</option>
+          <option value="web-dev">Web Development</option>
+          <option value="mobile-app">Mobile App</option>
+          <option value="ui-ux">UI / UX Design</option>
+          <option value="branding">Branding</option>
+          <option value="consulting">Tech Consulting</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="divider">Project Brief</div>
+
+      <div class="field">
+        <label for="message">Describe Your Project <span class="req">*</span></label>
+        <textarea id="message" placeholder="What are you building? Timeline, budget, stack — the more detail the better." required></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <span id="btnText">Send Inquiry →</span>
+        <div class="spinner" id="spinner"></div>
+      </button>
+    </form>
+
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">✓</div>
+      <h2>Inquiry Received.</h2>
+      <p>Your project brief is in our system. We'll analyze it and reach out within 24 hours with next steps.</p>
+      <button class="reset-btn" onclick="resetForm()">Submit another inquiry</button>
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <div class="toast-icon" id="toastIcon"></div>
+    <div>
+      <div class="toast-title" id="toastTitle"></div>
+      <div class="toast-sub" id="toastSub"></div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000/api';
+
+    function showToast(type, title, sub) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastIcon').textContent = type === 'success' ? '✅' : '❌';
+      document.getElementById('toastTitle').textContent = title;
+      document.getElementById('toastSub').textContent = sub;
+      t.className = 'toast ' + type + ' show';
+      setTimeout(() => { t.className = 'toast'; }, 4500);
+    }
+
+    document.getElementById('leadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (document.querySelector('input[name="website"]').value) return;
+
+      const btn     = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      const spinner = document.getElementById('spinner');
+
+      btn.disabled = true;
+      btnText.textContent = 'Sending...';
+      spinner.style.display = 'block';
+
+      const lead = {
+        name:    document.getElementById('name').value.trim(),
+        email:   document.getElementById('email').value.trim(),
+        phone:   document.getElementById('phone').value.trim() || null,
+        source:  document.getElementById('source').value,
+        service: document.getElementById('service').value || null,
+        message: document.getElementById('message').value.trim()
+      };
+
+      try {
+        const res  = await fetch(API + '/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(lead)
+        });
+        const data = await res.json();
+        if (res.ok) {
+          document.getElementById('leadForm').style.display = 'none';
+          document.getElementById('successScreen').style.display = 'flex';
+          showToast('success', 'Inquiry sent!', "We'll be in touch within 24 hours.");
+        } else {
+          throw new Error(data.message || 'Something went wrong');
+        }
+      } catch (err) {
+        showToast('error', 'Failed to send', err.message);
+        btn.disabled = false;
+        btnText.textContent = 'Send Inquiry →';
+        spinner.style.display = 'none';
+      }
+    });
+
+    function resetForm() {
+      document.getElementById('leadForm').reset();
+      document.getElementById('leadForm').style.display = 'flex';
+      document.getElementById('successScreen').style.display = 'none';
+      document.getElementById('submitBtn').disabled = false;
+      document.getElementById('btnText').textContent = 'Send Inquiry →';
+      document.getElementById('spinner').style.display = 'none';
+    }
+  </script>
+</body>
+</html>

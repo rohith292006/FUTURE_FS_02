@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Omnikira Labs — CRM Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --black:#080909;
+  --surface:#111313;
+  --card:#161919;
+  --border:#2a3333;
+  --green:#39ff6e;
+  --green-glow:rgba(57,255,110,0.15);
+  --green-dim:rgba(57,255,110,0.08);
+  --text-primary:#f5f9f9;
+  --text-secondary:#bfe0e0;
+  --text-body:#9fb8b8;
+  --text-muted:#647d7d;
+  --error:#ff5c5c;
+  --warn:#fbbf24;
+  --blue:#5eb1ff;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Inter',sans-serif;
+}
+
+html,body{
+  min-height:100%;
+  background:var(--black);
+  color:var(--text-primary);
+  font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;
+}
+
+body{
+  background-image:
+    radial-gradient(circle at 100% 0%, rgba(57,255,110,0.05) 0%, transparent 40%),
+    radial-gradient(circle at 0% 100%, rgba(57,255,110,0.04) 0%, transparent 40%);
+  background-attachment:fixed;
+}
+
+.app{display:flex;flex-direction:column;min-height:100vh;}
+
+/* TOPBAR */
+.topbar{
+  height:68px;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;
+  position:sticky;top:0;z-index:100;
+  flex-shrink:0;
+}
+
+.topbar-left{display:flex;align-items:center;gap:14px;min-width:0;}
+
+.logo-mark{
+  width:34px;height:34px;background:var(--green);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;
+}
+
+.logo-text{
+  font-family:var(--mono);font-size:0.85rem;font-weight:600;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--green);
+  white-space:nowrap;
+}
+
+.topbar-divider{width:1px;height:24px;background:var(--border);margin:0 6px;flex-shrink:0;}
+
+.topbar-page{
+  font-family:var(--mono);font-size:0.78rem;font-weight:500;
+  letter-spacing:0.08em;text-transform:uppercase;color:var(--text-secondary);
+  white-space:nowrap;
+}
+
+.topbar-right{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+
+.admin-pill{
+  display:flex;align-items:center;gap:8px;
+  background:var(--green-dim);border:1px solid rgba(57,255,110,0.25);
+  border-radius:24px;padding:7px 16px;
+  font-family:var(--mono);font-size:0.72rem;font-weight:500;
+  color:var(--green);white-space:nowrap;
+}
+
+.pulse{
+  width:6px;height:6px;border-radius:50%;background:var(--green);
+  animation:blink 2s ease-in-out infinite;flex-shrink:0;
+}
+
+@keyframes blink{
+  0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(57,255,110,0.5);}
+  50%{opacity:.5;box-shadow:0 0 0 5px rgba(57,255,110,0);}
+}
+
+.logout-btn{
+  background:transparent;border:1px solid var(--border);
+  border-radius:8px;padding:9px 16px;
+  font-family:var(--mono);font-size:0.72rem;font-weight:500;
+  letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--text-body);cursor:pointer;transition:all 0.2s;
+  white-space:nowrap;
+}
+
+.logout-btn:hover{border-color:var(--error);color:var(--error);background:rgba(255,92,92,0.06);}
+
+/* MAIN */
+.main{flex:1;padding:28px;display:flex;flex-direction:column;gap:24px;width:100%;max-width:1500px;margin:0 auto;}
+
+/* ANALYTICS */
+.analytics{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+
+.stat-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:22px;
+  display:flex;flex-direction:column;gap:10px;
+  transition:border-color 0.2s,transform 0.2s;
+  min-width:0;
+}
+
+.stat-card:hover{border-color:rgba(57,255,110,0.35);transform:translateY(-2px);}
+.stat-card.c-green{border-left:3px solid var(--green);}
+.stat-card.c-warn{border-left:3px solid var(--warn);}
+.stat-card.c-blue{border-left:3px solid var(--blue);}
+
+.stat-label{
+  font-family:var(--mono);font-size:0.7rem;font-weight:600;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--text-secondary);
+}
+
+.stat-value{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:2.5rem;letter-spacing:0.02em;line-height:1;color:var(--text-primary);
+}
+
+.stat-sub{font-size:0.8rem;color:var(--text-body);font-weight:400;}
+
+/* CONTROLS */
+.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+
+.search-wrap{position:relative;flex:1;min-width:240px;}
+
+.search-icon{
+  position:absolute;left:15px;top:50%;transform:translateY(-50%);
+  color:var(--text-body);font-size:0.95rem;pointer-events:none;
+}
+
+.search-input{
+  width:100%;background:var(--card);border:1px solid var(--border);
+  border-radius:10px;padding:12px 16px 12px 42px;
+  font-family:var(--sans);font-size:0.92rem;
+  color:var(--text-primary);outline:none;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+
+.search-input::placeholder{color:var(--text-muted);}
+.search-input:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--green-glow);}
+
+.filter-group{display:flex;gap:8px;flex-wrap:wrap;}
+
+.filter-btn{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:9px;padding:10px 18px;
+  font-family:var(--mono);font-size:0.74rem;font-weight:500;
+  letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--text-body);cursor:pointer;transition:all 0.2s;
+  white-space:nowrap;
+}
+
+.filter-btn:hover{border-color:var(--green);color:var(--green);}
+.filter-btn.active{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+
+.refresh-btn{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:9px;padding:10px 18px;
+  font-family:var(--mono);font-size:0.78rem;font-weight:500;
+  color:var(--text-body);cursor:pointer;transition:all 0.2s;
+  white-space:nowrap;
+}
+
+.refresh-btn:hover{border-color:var(--green);color:var(--green);}
+
+/* TABLE */
+.table-wrap{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+}
+
+.table-header{
+  padding:18px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:8px;
+}
+
+.table-title{
+  font-family:var(--mono);font-size:0.78rem;font-weight:600;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--text-secondary);
+}
+
+.lead-count{
+  font-family:var(--mono);font-size:0.74rem;font-weight:500;
+  color:var(--green);letter-spacing:0.06em;
+}
+
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+table{width:100%;border-collapse:collapse;min-width:680px;}
+
+thead th{
+  padding:14px 20px;text-align:left;
+  font-family:var(--mono);font-size:0.72rem;font-weight:600;
+  letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--text-secondary);border-bottom:1px solid var(--border);
+  white-space:nowrap;
+}
+
+tbody tr{
+  border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background 0.15s;
+}
+
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(57,255,110,0.05);}
+
+tbody td{
+  padding:16px 20px;font-size:0.92rem;
+  color:var(--text-primary);vertical-align:middle;
+}
+
+.td-name{font-weight:600;}
+.td-email{color:var(--text-body);font-size:0.86rem;}
+.td-source{
+  font-family:var(--mono);font-size:0.74rem;font-weight:500;
+  color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;
+}
+.td-date{font-family:var(--mono);font-size:0.74rem;color:var(--text-body);white-space:nowrap;}
+
+.badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 13px;border-radius:20px;
+  font-family:var(--mono);font-size:0.68rem;font-weight:600;
+  letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap;
+}
+
+.badge-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+
+.badge.new{background:rgba(94,177,255,0.13);color:var(--blue);border:1px solid rgba(94,177,255,0.3);}
+.badge.new .badge-dot{background:var(--blue);}
+.badge.contacted{background:rgba(251,191,36,0.13);color:var(--warn);border:1px solid rgba(251,191,36,0.3);}
+.badge.contacted .badge-dot{background:var(--warn);}
+.badge.converted{background:var(--green-dim);color:var(--green);border:1px solid rgba(57,255,110,0.3);}
+.badge.converted .badge-dot{background:var(--green);box-shadow:0 0 5px var(--green);}
+
+/* Empty / loading */
+.empty-state{padding:80px 24px;text-align:center;}
+.empty-icon{font-size:2.6rem;margin-bottom:18px;opacity:0.5;}
+.empty-title{
+  font-family:var(--mono);font-size:0.85rem;font-weight:600;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--text-secondary);margin-bottom:10px;
+}
+.empty-sub{font-size:0.9rem;color:var(--text-body);}
+
+.loading-cell{
+  text-align:center;padding:40px 24px;
+  font-family:var(--mono);font-size:0.8rem;font-weight:500;
+  color:var(--text-body);letter-spacing:0.08em;
+}
+
+/* OVERLAY + SIDE PANEL */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(3px);
+  z-index:200;opacity:0;pointer-events:none;transition:opacity 0.25s;
+}
+.overlay.open{opacity:1;pointer-events:all;}
+
+.panel{
+  position:fixed;top:0;right:0;bottom:0;
+  width:520px;max-width:100vw;
+  background:var(--surface);border-left:1px solid var(--border);
+  z-index:201;display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.panel.open{transform:translateX(0);}
+
+.panel-topbar{
+  padding:22px 28px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+
+.panel-title{
+  font-family:var(--mono);font-size:0.78rem;font-weight:600;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--text-secondary);
+}
+
+.close-btn{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:8px;width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-body);cursor:pointer;font-size:1.05rem;
+  transition:all 0.2s;flex-shrink:0;
+}
+.close-btn:hover{border-color:var(--error);color:var(--error);}
+
+.panel-body{
+  flex:1;overflow-y:auto;padding:24px 28px;
+  display:flex;flex-direction:column;gap:20px;
+}
+
+.block{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+
+.lead-info-header{
+  padding:20px 22px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:16px;
+}
+
+.lead-avatar{
+  width:48px;height:48px;border-radius:12px;
+  background:var(--green-dim);border:1px solid rgba(57,255,110,0.3);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--green);
+  flex-shrink:0;
+}
+
+.lead-name{font-weight:700;font-size:1.05rem;color:var(--text-primary);margin-bottom:4px;}
+.lead-email{font-size:0.86rem;color:var(--text-body);word-break:break-all;}
+
+.info-grid{display:grid;grid-template-columns:1fr 1fr;}
+
+.info-cell{
+  padding:16px 22px;
+  border-bottom:1px solid var(--border);
+  border-right:1px solid var(--border);
+}
+.info-cell:nth-child(even){border-right:none;}
+.info-cell:nth-last-child(-n+2){border-bottom:none;}
+
+.info-label{
+  font-family:var(--mono);font-size:0.65rem;font-weight:600;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--text-secondary);margin-bottom:7px;
+}
+
+.info-val{font-size:0.92rem;color:var(--text-primary);word-break:break-word;}
+
+.block-pad{padding:20px 22px;}
+
+.block-label{
+  font-family:var(--mono);font-size:0.72rem;font-weight:600;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--text-secondary);margin-bottom:14px;
+}
+
+.msg-text{font-size:0.92rem;color:var(--text-body);line-height:1.75;}
+
+.status-buttons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+
+.status-btn{
+  padding:12px 8px;background:var(--surface);border:1px solid var(--border);
+  border-radius:9px;font-family:var(--mono);font-size:0.72rem;font-weight:600;
+  letter-spacing:0.05em;text-transform:uppercase;
+  color:var(--text-body);cursor:pointer;transition:all 0.2s;text-align:center;
+}
+.status-btn:hover{border-color:var(--text-secondary);color:var(--text-primary);}
+.status-btn.active.new{background:rgba(94,177,255,0.12);border-color:var(--blue);color:var(--blue);}
+.status-btn.active.contacted{background:rgba(251,191,36,0.12);border-color:var(--warn);color:var(--warn);}
+.status-btn.active.converted{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+
+.notes-header{padding:20px 22px;border-bottom:1px solid var(--border);}
+.notes-list{max-height:240px;overflow-y:auto;}
+
+.note-item{
+  padding:15px 22px;border-bottom:1px solid var(--border);
+  display:flex;flex-direction:column;gap:6px;
+}
+.note-item:last-child{border-bottom:none;}
+.note-text{font-size:0.9rem;color:var(--text-primary);line-height:1.6;}
+.note-date{font-family:var(--mono);font-size:0.65rem;color:var(--text-body);}
+
+.notes-empty{
+  padding:28px 22px;text-align:center;
+  font-family:var(--mono);font-size:0.74rem;font-weight:500;
+  color:var(--text-body);letter-spacing:0.06em;
+}
+
+.note-form{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:10px;}
+
+.note-input{
+  flex:1;background:var(--surface);border:1px solid var(--border);
+  border-radius:9px;padding:11px 15px;
+  font-family:var(--sans);font-size:0.9rem;
+  color:var(--text-primary);outline:none;transition:border-color 0.2s;
+  min-width:0;
+}
+.note-input::placeholder{color:var(--text-muted);}
+.note-input:focus{border-color:var(--green);}
+
+.add-note-btn{
+  background:var(--green);color:var(--black);
+  border:none;border-radius:9px;padding:11px 18px;
+  font-family:var(--mono);font-size:0.74rem;font-weight:600;
+  letter-spacing:0.06em;text-transform:uppercase;
+  cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0;
+}
+.add-note-btn:hover{background:#55ff8a;box-shadow:0 0 18px rgba(57,255,110,0.4);}
+.add-note-btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+.panel-footer{padding:20px 28px;border-top:1px solid var(--border);flex-shrink:0;}
+
+.delete-btn{
+  width:100%;background:transparent;border:1px solid rgba(255,92,92,0.4);
+  border-radius:10px;padding:14px;
+  font-family:var(--mono);font-size:0.78rem;font-weight:600;
+  letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--error);cursor:pointer;transition:all 0.2s;
+}
+.delete-btn:hover{background:rgba(255,92,92,0.1);border-color:var(--error);}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;right:24px;left:auto;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:15px 20px;
+  display:flex;align-items:flex-start;gap:12px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.6);
+  transform:translateY(80px);opacity:0;
+  transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  z-index:999;max-width:320px;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-left:3px solid var(--green);}
+.toast.error{border-left:3px solid var(--error);}
+.toast-icon{font-size:1.05rem;margin-top:1px;flex-shrink:0;}
+.toast-title{font-weight:700;font-size:0.9rem;margin-bottom:3px;color:var(--text-primary);}
+.toast-sub{color:var(--text-body);font-size:0.8rem;}
+
+/* RESPONSIVE */
+@media (max-width:1200px){
+  .analytics{grid-template-columns:repeat(3,1fr);}
+}
+
+@media (max-width:860px){
+  .main{padding:20px;gap:20px;}
+  .topbar{padding:0 18px;}
+  .analytics{grid-template-columns:repeat(2,1fr);gap:12px;}
+  .stat-card{padding:18px;}
+  .stat-value{font-size:2.1rem;}
+  .controls{gap:10px;}
+  .search-wrap{min-width:160px;}
+  .filter-group{width:100%;}
+  .filter-btn{flex:1;text-align:center;padding:10px 8px;}
+  .panel{width:100%;}
+}
+
+@media (max-width:600px){
+  .topbar-page{display:none;}
+  .topbar-divider{display:none;}
+  .logo-text{font-size:0.72rem;}
+  .admin-pill span{display:none;}
+  .admin-pill{padding:9px;}
+  .analytics{grid-template-columns:repeat(2,1fr);}
+  .main{padding:14px;gap:16px;}
+  .table-header{padding:14px 16px;}
+  .panel-topbar,.panel-body,.panel-footer{padding-left:18px;padding-right:18px;}
+  .toast{left:14px;right:14px;max-width:none;bottom:14px;}
+}
+
+@media (max-width:420px){
+  .analytics{grid-template-columns:1fr 1fr;}
+  .stat-value{font-size:1.9rem;}
+  .info-grid{grid-template-columns:1fr;}
+  .info-cell{border-right:none !important;}
+  .status-buttons{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="logo-mark">⚡</div>
+      <span class="logo-text">Omnikira Labs</span>
+      <div class="topbar-divider"></div>
+      <span class="topbar-page">CRM Dashboard</span>
+    </div>
+    <div class="topbar-right">
+      <div class="admin-pill">
+        <div class="pulse"></div>
+        <span id="adminEmail">Admin</span>
+      </div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <div class="analytics">
+      <div class="stat-card">
+        <span class="stat-label">Total Leads</span>
+        <span class="stat-value" id="statTotal">—</span>
+        <span class="stat-sub">All time</span>
+      </div>
+      <div class="stat-card c-blue">
+        <span class="stat-label">New</span>
+        <span class="stat-value" id="statNew">—</span>
+        <span class="stat-sub">Awaiting contact</span>
+      </div>
+      <div class="stat-card c-warn">
+        <span class="stat-label">Contacted</span>
+        <span class="stat-value" id="statContacted">—</span>
+        <span class="stat-sub">In progress</span>
+      </div>
+      <div class="stat-card c-green">
+        <span class="stat-label">Converted</span>
+        <span class="stat-value" id="statConverted">—</span>
+        <span class="stat-sub">Closed deals</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Conv. Rate</span>
+        <span class="stat-value" id="statRate">—</span>
+        <span class="stat-sub">% converted</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="searchInput" type="text" placeholder="Search by name or email..."/>
+      </div>
+      <div class="filter-group">
+        <button class="filter-btn active" data-status="all">All</button>
+        <button class="filter-btn" data-status="new">New</button>
+        <button class="filter-btn" data-status="contacted">Contacted</button>
+        <button class="filter-btn" data-status="converted">Converted</button>
+      </div>
+      <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-header">
+        <span class="table-title">// Lead Registry</span>
+        <span class="lead-count" id="leadCount">— leads</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Source</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="leadsBody">
+            <tr><td colspan="5" class="loading-cell">// loading leads...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
+
+<div class="panel" id="panel">
+  <div class="panel-topbar">
+    <span class="panel-title">// Lead Detail</span>
+    <button class="close-btn" onclick="closePanel()">✕</button>
+  </div>
+
+  <div class="panel-body">
+
+    <div class="block">
+      <div class="lead-info-header">
+        <div class="lead-avatar" id="panelAvatar">?</div>
+        <div>
+          <div class="lead-name" id="panelName">—</div>
+          <div class="lead-email" id="panelEmail">—</div>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-cell"><div class="info-label">Phone</div><div class="info-val" id="panelPhone">—</div></div>
+        <div class="info-cell"><div class="info-label">Source</div><div class="info-val" id="panelSource">—</div></div>
+        <div class="info-cell"><div class="info-label">Service</div><div class="info-val" id="panelService">—</div></div>
+        <div class="info-cell"><div class="info-label">Submitted</div><div class="info-val" id="panelDate">—</div></div>
+      </div>
+    </div>
+
+    <div class="block block-pad">
+      <div class="block-label">Project Brief</div>
+      <div class="msg-text" id="panelMessage">—</div>
+    </div>
+
+    <div class="block block-pad">
+      <div class="block-label">Update Status</div>
+      <div class="status-buttons">
+        <button class="status-btn new"       data-s="new"       onclick="updateStatus('new')">New</button>
+        <button class="status-btn contacted" data-s="contacted" onclick="updateStatus('contacted')">Contacted</button>
+        <button class="status-btn converted" data-s="converted" onclick="updateStatus('converted')">Converted</button>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="notes-header"><div class="block-label" style="margin:0;">Follow-up Notes</div></div>
+      <div class="notes-list" id="notesList">
+        <div class="notes-empty">// no notes yet</div>
+      </div>
+      <div class="note-form">
+        <input class="note-input" id="noteInput" type="text" placeholder="Add a follow-up note..."/>
+        <button class="add-note-btn" id="addNoteBtn" onclick="addNote()">Add</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="panel-footer">
+    <button class="delete-btn" onclick="deleteLead()">⚠ Delete This Lead</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toastIcon"></div>
+  <div>
+    <div class="toast-title" id="toastTitle"></div>
+    <div class="toast-sub" id="toastSub"></div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:5000/api';
+let allLeads = [];
+let currentLead = null;
+let currentFilter = 'all';
+let searchTerm = '';
+
+const token = localStorage.getItem('crm_token');
+if (!token) window.location.href = 'admin.html';
+document.getElementById('adminEmail').textContent = localStorage.getItem('crm_admin') || 'Admin';
+
+const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+
+function showToast(type, title, sub) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastIcon').textContent = type === 'success' ? '✅' : '❌';
+  document.getElementById('toastTitle').textContent = title;
+  document.getElementById('toastSub').textContent = sub || '';
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => { t.className = 'toast'; }, 3500);
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function badge(status) {
+  const labels = { new: 'New', contacted: 'Contacted', converted: 'Converted' };
+  return '<span class="badge ' + status + '"><span class="badge-dot"></span>' + (labels[status] || status) + '</span>';
+}
+
+async function loadAnalytics() {
+  try {
+    const res = await fetch(API + '/leads/analytics', { headers });
+    if (res.status === 401 || res.status === 403) { logout(); return; }
+    const d = await res.json();
+    document.getElementById('statTotal').textContent     = d.total;
+    document.getElementById('statNew').textContent       = d.new;
+    document.getElementById('statContacted').textContent = d.contacted;
+    document.getElementById('statConverted').textContent = d.converted;
+    document.getElementById('statRate').textContent      = d.conversionRate + '%';
+  } catch(e) { console.error(e); }
+}
+
+async function loadLeads() {
+  try {
+    let url = API + '/leads';
+    const params = [];
+    if (currentFilter !== 'all') params.push('status=' + currentFilter);
+    if (searchTerm) params.push('search=' + encodeURIComponent(searchTerm));
+    if (params.length) url += '?' + params.join('&');
+
+    const res = await fetch(url, { headers });
+    if (res.status === 401 || res.status === 403) { logout(); return; }
+    allLeads = await res.json();
+    renderTable();
+  } catch(e) {
+    showToast('error', 'Failed to load leads', e.message);
+  }
+}
+
+function renderTable() {
+  const tbody = document.getElementById('leadsBody');
+  document.getElementById('leadCount').textContent = allLeads.length + ' lead' + (allLeads.length !== 1 ? 's' : '');
+
+  if (!allLeads.length) {
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No leads found</div><div class="empty-sub">Try a different filter or search term</div></div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = allLeads.map(lead => `
+    <tr onclick="openPanel('${lead._id}')">
+      <td class="td-name">${lead.name}</td>
+      <td class="td-email">${lead.email}</td>
+      <td class="td-source">${lead.source || '—'}</td>
+      <td>${badge(lead.status)}</td>
+      <td class="td-date">${fmtDate(lead.createdAt)}</td>
+    </tr>
+  `).join('');
+}
+
+async function loadAll() {
+  await loadAnalytics();
+  await loadLeads();
+}
+
+function openPanel(id) {
+  currentLead = allLeads.find(l => l._id === id);
+  if (!currentLead) return;
+  const l = currentLead;
+  document.getElementById('panelAvatar').textContent  = l.name.charAt(0).toUpperCase();
+  document.getElementById('panelName').textContent    = l.name;
+  document.getElementById('panelEmail').textContent   = l.email;
+  document.getElementById('panelPhone').textContent   = l.phone || '—';
+  document.getElementById('panelSource').textContent  = l.source || '—';
+  document.getElementById('panelService').textContent = l.service || '—';
+  document.getElementById('panelDate').textContent    = fmtDate(l.createdAt);
+  document.getElementById('panelMessage').textContent = l.message;
+
+  document.querySelectorAll('.status-btn').forEach(btn => {
+    btn.classList.remove('active');
+    if (btn.dataset.s === l.status) btn.classList.add('active');
+  });
+
+  renderNotes(l.notes || []);
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('panel').classList.add('open');
+  document.getElementById('noteInput').value = '';
+  document.body.style.overflow = 'hidden';
+}
+
+function closePanel() {
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('panel').classList.remove('open');
+  currentLead = null;
+  document.body.style.overflow = '';
+}
+
+function renderNotes(notes) {
+  const list = document.getElementById('notesList');
+  if (!notes.length) {
+    list.innerHTML = '<div class="notes-empty">// no notes yet</div>';
+    return;
+  }
+  list.innerHTML = notes.map(n => `
+    <div class="note-item">
+      <div class="note-text">${n.text}</div>
+      <div class="note-date">${fmtDate(n.createdAt)}</div>
+    </div>
+  `).join('');
+  list.scrollTop = list.scrollHeight;
+}
+
+async function updateStatus(status) {
+  if (!currentLead) return;
+  try {
+    const res = await fetch(API + '/leads/' + currentLead._id + '/status', {
+      method: 'PATCH', headers, body: JSON.stringify({ status })
+    });
+    if (!res.ok) throw new Error('Failed to update');
+    currentLead.status = status;
+    document.querySelectorAll('.status-btn').forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.dataset.s === status) btn.classList.add('active');
+    });
+    const idx = allLeads.findIndex(l => l._id === currentLead._id);
+    if (idx !== -1) allLeads[idx].status = status;
+    renderTable();
+    loadAnalytics();
+    showToast('success', 'Status updated', 'Lead marked as ' + status);
+  } catch(e) {
+    showToast('error', 'Update failed', e.message);
+  }
+}
+
+async function addNote() {
+  if (!currentLead) return;
+  const input = document.getElementById('noteInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const btn = document.getElementById('addNoteBtn');
+  btn.disabled = true;
+  try {
+    const res = await fetch(API + '/leads/' + currentLead._id + '/notes', {
+      method: 'POST', headers, body: JSON.stringify({ text })
+    });
+    if (!res.ok) throw new Error('Failed to add note');
+    const data = await res.json();
+    currentLead.notes = data.notes;
+    renderNotes(data.notes);
+    input.value = '';
+    showToast('success', 'Note added', '');
+  } catch(e) {
+    showToast('error', 'Failed to add note', e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function deleteLead() {
+  if (!currentLead) return;
+  if (!confirm('Delete this lead? This cannot be undone.')) return;
+  try {
+    const res = await fetch(API + '/leads/' + currentLead._id, { method: 'DELETE', headers });
+    if (!res.ok) throw new Error('Delete failed');
+    allLeads = allLeads.filter(l => l._id !== currentLead._id);
+    renderTable();
+    loadAnalytics();
+    closePanel();
+    showToast('success', 'Lead deleted', '');
+  } catch(e) {
+    showToast('error', 'Delete failed', e.message);
+  }
+}
+
+function logout() {
+  localStorage.removeItem('crm_token');
+  localStorage.removeItem('crm_admin');
+  window.location.href = 'admin.html';
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.status;
+    loadLeads();
+  });
+});
+
+let searchTimer;
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    searchTerm = e.target.value.trim();
+    loadLeads();
+  }, 350);
+});
+
+document.getElementById('noteInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') addNote();
+});
+
+loadAll();
+</script>
+</body>
+</html>

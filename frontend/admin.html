@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Omnikira Labs — Admin Access</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:          #080909;
+      --surface:        #111313;
+      --card:           #161919;
+      --border:         #2a3333;
+      --green:          #39ff6e;
+      --green-glow:     rgba(57,255,110,0.14);
+      --green-dim:      rgba(57,255,110,0.07);
+
+      /* ── SAME COLOR HIERARCHY AS INDEX.HTML ── */
+      --text-primary:   #f0f5f5;   /* main headings                     */
+      --text-secondary: #b8d4d4;   /* subheadings, labels, card headers  */
+      --text-body:      #94b0b0;   /* body text, descriptions            */
+      --text-muted:     #5a7070;   /* footer, timestamps, decorative     */
+
+      --error:     #ff4f4f;
+      --error-dim: rgba(255,79,79,0.08);
+      --mono:      'JetBrains Mono', monospace;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--black);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Scanline texture */
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 4px);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* Bottom-right glow */
+    body::after {
+      content: ''; position: fixed; bottom: -120px; right: -120px;
+      width: 550px; height: 550px;
+      background: radial-gradient(circle, rgba(57,255,110,0.08) 0%, transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ═══════════ PAGE ═══════════ */
+    .page {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 48px 20px;
+      position: relative; z-index: 1;
+    }
+
+    /* Top glow */
+    .page::before {
+      content: ''; position: fixed;
+      top: -120px; left: 50%; transform: translateX(-50%);
+      width: 700px; height: 360px;
+      background: radial-gradient(ellipse, rgba(57,255,110,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ═══════════ HEADER ═══════════ */
+    .header { text-align: center; margin-bottom: 48px; }
+
+    .logo-row {
+      display: inline-flex; align-items: center;
+      gap: 12px; margin-bottom: 44px;
+    }
+
+    .logo-mark {
+      width: 36px; height: 36px; background: var(--green);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .logo-text {
+      font-family: var(--mono); font-size: 0.88rem;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--green);
+    }
+
+    .access-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--green-dim);
+      border: 1px solid rgba(57,255,110,0.25);
+      border-radius: 20px; padding: 8px 18px;
+      font-family: var(--mono); font-size: 0.72rem;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--green); margin-bottom: 24px;
+    }
+
+    .access-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green);
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(57,255,110,0.5); }
+      50% { opacity:.5; box-shadow: 0 0 0 5px rgba(57,255,110,0); }
+    }
+
+    .page-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 6vw, 5rem);
+      letter-spacing: 0.04em; line-height: 0.95;
+      color: var(--text-primary); margin-bottom: 14px;
+    }
+
+    .page-title span { color: var(--green); }
+
+    /* "// authenticate to continue" — now clearly visible */
+    .page-sub {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.14em;
+    }
+
+    /* ═══════════ CARD ═══════════ */
+    .card {
+      width: 100%; max-width: 500px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+    }
+
+    .card-header {
+      padding: 22px 32px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    /* "CREDENTIAL VERIFICATION" — now clearly visible */
+    .card-header-label {
+      font-family: var(--mono); font-size: 0.72rem;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .shield-icon {
+      width: 32px; height: 32px;
+      background: var(--green-dim);
+      border: 1px solid rgba(57,255,110,0.25);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem;
+    }
+
+    .card-body { padding: 32px; }
+
+    .field { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .field:last-of-type { margin-bottom: 28px; }
+
+    /* Labels — now clearly visible */
+    label {
+      font-family: var(--mono); font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .input-wrap { position: relative; }
+
+    input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 15px 18px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input::placeholder {
+      color: var(--text-muted); font-size: 0.875rem;
+    }
+
+    input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px var(--green-glow);
+    }
+
+    input.error-input {
+      border-color: var(--error);
+      box-shadow: 0 0 0 3px var(--error-dim);
+    }
+
+    .toggle-pw {
+      position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+      background: none; border: none;
+      color: var(--text-body);
+      cursor: pointer; font-size: 1.1rem; padding: 0; line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .toggle-pw:hover { color: var(--green); }
+
+    /* Error message */
+    .error-msg {
+      display: none; align-items: center; gap: 10px;
+      background: var(--error-dim);
+      border: 1px solid rgba(255,79,79,0.25);
+      border-radius: 9px; padding: 14px 16px;
+      font-size: 0.875rem; color: var(--error);
+      margin-bottom: 20px;
+    }
+
+    .error-msg.show { display: flex; }
+
+    .login-btn {
+      width: 100%;
+      background: var(--green); color: var(--black);
+      border: none; border-radius: 9px;
+      padding: 16px;
+      font-family: var(--mono); font-size: 0.85rem; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+
+    .login-btn:hover {
+      background: #52ff85;
+      box-shadow: 0 0 32px rgba(57,255,110,0.45), 0 4px 16px rgba(0,0,0,0.3);
+      transform: translateY(-2px);
+    }
+
+    .login-btn:active { transform: translateY(0); }
+    .login-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .spinner {
+      width: 15px; height: 15px;
+      border: 2px solid rgba(0,0,0,0.25);
+      border-top-color: var(--black);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Card footer — "Protected by JWT..." now clearly visible */
+    .card-footer {
+      padding: 18px 32px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .card-footer p {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-body);
+      letter-spacing: 0.1em;
+      line-height: 1.6;
+    }
+
+    .card-footer span { color: var(--green); }
+
+    /* ═══════════ BOTTOM META ═══════════ */
+    .meta {
+      margin-top: 36px;
+      display: flex; align-items: center; gap: 28px;
+      flex-wrap: wrap; justify-content: center;
+    }
+
+    /* Meta items — now clearly visible */
+    .meta-item {
+      display: flex; align-items: center; gap: 7px;
+      font-family: var(--mono); font-size: 0.68rem;
+      color: var(--text-body);
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+
+    .meta-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 5px var(--green);
+    }
+
+    /* ═══════════ RESPONSIVE ═══════════ */
+    @media (max-width: 540px) {
+      .card { border-radius: 12px; max-width: 100%; }
+      .card-body { padding: 24px 20px; }
+      .card-header { padding: 18px 20px; }
+      .card-footer { padding: 16px 20px; }
+      .page-title { font-size: 3.2rem; }
+      .meta { gap: 16px; }
+    }
+
+    @media (max-width: 360px) {
+      .page { padding: 32px 16px; }
+      .card-body { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="logo-row">
+        <div class="logo-mark">⚡</div>
+        <span class="logo-text">Omnikira Labs</span>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <div class="access-tag">
+          <div class="access-dot"></div>
+          Restricted Access
+        </div>
+      </div>
+
+      <h1 class="page-title">ADMIN<br/><span>PORTAL</span></h1>
+      <p class="page-sub">// authenticate to continue</p>
+    </div>
+
+    <!-- CARD -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-label">Credential Verification</span>
+        <div class="shield-icon">🔐</div>
+      </div>
+
+      <div class="card-body">
+        <!-- Error message -->
+        <div class="error-msg" id="errorMsg">
+          <span>⚠</span>
+          <span id="errorText">Invalid email or password.</span>
+        </div>
+
+        <form id="loginForm">
+          <div class="field">
+            <label for="email">Admin Email</label>
+            <input type="email" id="email" placeholder="admin@futurefs.com" required autocomplete="email"/>
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="input-wrap">
+              <input type="password" id="password" placeholder="••••••••••" required autocomplete="current-password" style="padding-right: 48px;"/>
+              <button type="button" class="toggle-pw" id="togglePw" title="Show/hide password">👁</button>
+            </div>
+          </div>
+
+          <button type="submit" class="login-btn" id="loginBtn">
+            <span id="btnText">Access Dashboard</span>
+            <div class="spinner" id="spinner"></div>
+          </button>
+        </form>
+      </div>
+
+      <div class="card-footer">
+        <p>Protected by <span>JWT Authentication</span> · Sessions expire in 8 hours</p>
+      </div>
+    </div>
+
+    <!-- BOTTOM META -->
+    <div class="meta">
+      <div class="meta-item"><div class="meta-dot"></div>SSL Secured</div>
+      <div class="meta-item"><div class="meta-dot"></div>Admin Only</div>
+      <div class="meta-item"><div class="meta-dot"></div>© 2026 Omnikira Labs</div>
+    </div>
+
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000/api';
+
+    // Redirect if already logged in
+    if (localStorage.getItem('crm_token')) {
+      window.location.href = 'dashboard.html';
+    }
+
+    // Toggle password visibility
+    document.getElementById('togglePw').addEventListener('click', () => {
+      const pw = document.getElementById('password');
+      const btn = document.getElementById('togglePw');
+      pw.type = pw.type === 'password' ? 'text' : 'password';
+      btn.textContent = pw.type === 'password' ? '👁' : '🙈';
+    });
+
+    // Login form submit
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const btn       = document.getElementById('loginBtn');
+      const btnText   = document.getElementById('btnText');
+      const spinner   = document.getElementById('spinner');
+      const errorMsg  = document.getElementById('errorMsg');
+      const errorText = document.getElementById('errorText');
+
+      // Reset errors
+      errorMsg.classList.remove('show');
+      document.getElementById('email').classList.remove('error-input');
+      document.getElementById('password').classList.remove('error-input');
+
+      btn.disabled = true;
+      btnText.textContent = 'Verifying...';
+      spinner.style.display = 'block';
+
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const res  = await fetch(API + '/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          localStorage.setItem('crm_token', data.token);
+          localStorage.setItem('crm_admin', data.admin.email);
+          btnText.textContent = 'Access Granted ✓';
+          spinner.style.display = 'none';
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 700);
+        } else {
+          throw new Error(data.message || 'Invalid credentials.');
+        }
+      } catch (err) {
+        errorText.textContent = err.message;
+        errorMsg.classList.add('show');
+        document.getElementById('email').classList.add('error-input');
+        document.getElementById('password').classList.add('error-input');
+        btn.disabled = false;
+        btnText.textContent = 'Access Dashboard';
+        spinner.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
